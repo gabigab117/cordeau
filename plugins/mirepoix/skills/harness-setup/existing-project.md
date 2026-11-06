@@ -42,7 +42,8 @@ Write these two rules now, even if no task has started.
   card, where they live, and the rule to read them before working.
 - **The simplification pass at the end of each code change** (piece 11). It applies its own thresholds. Write
   the section it expects, with:
-  - the closing order: code and green tests, then the pass, then the checks again, then the commit;
+  - the closing order: code and green tests, then the pass, then the security pass if the card reaches a sensitive
+    part, then the checks again, then the commit;
   - the shared pieces to compare, found during exploration;
   - the house rules: same behaviour, neutral tone, no reformatting mixed with logic;
   - the test commands to run again;
@@ -123,8 +124,19 @@ private.
 
 - A hook blocks anything that touches production: deployment, migrations or commands run with production settings, access to the
   production database. If you cannot tell where the local settings point (an unread `.env`), it also refuses the commands of the
-  framework until the user confirms.
+  framework until the user confirms. Build it on the parsing of `scripts/guardrails.py`, not on a regular expression, and remember that
+  a text reader leaks: the sandbox is the second wall.
 - No writing to real data, even to try.
+
+## Security on existing code
+
+- A dependency audit or a configuration check that already fails is reported, never fixed in passing. The plan says how the
+  CI job starts, reporting only or with a dated list of known findings, and the user decides. An upgrade is a task of its own.
+- The security rules of the linter follow the limit of any lint: changed files only.
+- A command that reads `.env` itself fails in the sandbox. Do not open the file and do not take the command out of the
+  sandbox on your own: give it fictional values in front of the command or a test configuration, or let the user decide.
+- A flaw seen while exploring is stated as a fact in the conversation or the private document, in a neutral tone, and is never
+  fixed during this session. In the versioned security section, name the places, not the flaws.
 
 ## Extra interview questions
 
@@ -146,5 +158,5 @@ production.
 2. changed code covered, total coverage stable or rising;
 3. no reformatting mixed with a logic change;
 4. behaviour in production unchanged, unless decided in writing;
-5. simplification pass done, and checks run again after it;
+5. simplification pass done, security pass if the card asks for it, and checks run again after them;
 6. card marked done.
