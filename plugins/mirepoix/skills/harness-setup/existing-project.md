@@ -17,8 +17,9 @@ condition. Say in the plan which ones you keep and why.
 
 ## An old instruction file
 
-A `CLAUDE.md`, or an `AGENTS.md` without the marker, is sorted, then rewritten shorter in `AGENTS.md`. Show the
-sorting in the plan:
+A `CLAUDE.md`, or an `AGENTS.md` without the marker, is sorted, and what stays is rewritten shorter in `AGENTS.md`,
+next to the rules of the base. Report the size of both files: after a short old file, the new one can be longer, and
+you say why. Show the sorting in the plan:
 
 | Rule found | What happens to it |
 |---|---|
@@ -91,7 +92,7 @@ stay factual and neutral.
   at each step.
 - During another task, no opportunistic rewrite: what would deserve one becomes a proposal.
 - **A formatter or a linter comes in file by file.** A touched file is first formatted, in a separate commit with no
-  other change, then modified. A full reformatting happens only if the user decides so, in a single commit listed in
+  other change, then modified. The `AGENTS.md` gives the exact command to format one file. A full reformatting happens only if the user decides so, in a single commit listed in
   `.git-blame-ignore-revs`.
 - Pre-commit only runs on changed files, its default behaviour. Never `--all-files` without the user's agreement,
   including at the verification step of the skill.
@@ -121,7 +122,8 @@ private.
 **If the project is in production:**
 
 - A hook blocks anything that touches production: deployment, migrations or commands run with production settings, access to the
-  production database.
+  production database. If you cannot tell where the local settings point (an unread `.env`), it also refuses the commands of the
+  framework until the user confirms.
 - No writing to real data, even to try.
 
 ## Extra interview questions

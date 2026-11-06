@@ -194,3 +194,133 @@ def test_simplifier_agent_is_read_only():
     """
     text = read(PLUGIN / "agents/simplifier.md")
     assert re.search(r"^tools: Read, Grep, Glob$", text, re.MULTILINE)
+
+
+def test_harness_setup_keeps_the_env_template_readable():
+    """
+    Given the rules harness-setup writes in the Claude Code settings
+    When they are read in order
+    Then the secret files are denied and the negation that frees the template comes last
+    """
+    text = read(HARNESS_SETUP / "SKILL.md")
+    positions = [text.index(rule) for rule in ("Read(.env)", "Read(.env.*)", "Read(!.env.example)")]
+    assert positions == sorted(positions)
+
+
+def test_harness_setup_treats_scripts_as_code_for_the_languages():
+    """
+    Given the language rules of harness-setup
+    When they are read
+    Then hook scripts, CI files and commit messages follow the language chosen for the code
+    """
+    text = " ".join(read(HARNESS_SETUP / "SKILL.md").split())
+    assert "Hook scripts, CI files and commit messages follow the language chosen for the code" in text
+
+
+def test_harness_setup_names_the_check_that_shows_agents_md_is_read():
+    """
+    Given the verification step of harness-setup
+    When it is read
+    Then it points to /context all, since the line announced by the docs does not always show
+    """
+    text = read(HARNESS_SETUP / "SKILL.md")
+    assert "/context all" in text
+    assert "AGENTS.md loaded" not in text
+
+
+def test_harness_setup_installs_the_checks_it_writes():
+    """
+    Given harness-setup writes a pre-commit configuration
+    When its instructions are read
+    Then they say to install the commit hook, since a check that does not run protects nothing
+    """
+    assert "pre-commit install" in read(HARNESS_SETUP / "SKILL.md")
+
+
+def test_harness_setup_tries_the_checks_on_a_staged_defect():
+    """
+    Given a secret scanner that only reads the staged files
+    When the verification step of harness-setup is read
+    Then it stages a fake secret and a lint defect, and expects them to be refused
+    """
+    text = " ".join(read(HARNESS_SETUP / "SKILL.md").split())
+    assert "staged, with a fake secret and a lint defect" in text
+
+
+def test_harness_setup_leaves_env_files_closed_while_exploring():
+    """
+    Given a project with secret files
+    When the exploration step of harness-setup is read
+    Then it says never to open them
+    """
+    text = " ".join(read(HARNESS_SETUP / "SKILL.md").split())
+    assert "Never open a `.env` file" in text
+
+
+def test_harness_setup_reads_its_files_when_a_step_needs_them():
+    """
+    Given reading a file of the plugin can prompt the user
+    When harness-setup is read
+    Then it delays the reference files until a step sends to them
+    """
+    text = " ".join(read(HARNESS_SETUP / "SKILL.md").split())
+    assert "only when a step sends you to them" in text
+    assert "Read [catalog.md](catalog.md), then propose the plan" in text
+
+
+def test_existing_project_reports_the_size_of_the_old_file():
+    """
+    Given a short old instruction file and all the rules of the base
+    When the new file comes out longer
+    Then the variant for an existing project asks to report both sizes and say why
+    """
+    text = " ".join(read(HARNESS_SETUP / "existing-project.md").split())
+    assert "Report the size of both files" in text
+
+
+def test_catalog_does_not_assume_the_plugin_is_installed():
+    """
+    Given the skills can be installed without the plugin
+    When the catalog talks about the guardrails of the plugin
+    Then it makes them conditional
+    """
+    text = " ".join(read(HARNESS_SETUP / "catalog.md").split())
+    assert "If the whole team works through Claude Code with the Mirepoix plugin" in text
+
+
+def test_harness_setup_plan_shows_its_sources_and_pinned_versions():
+    """
+    Given a plan that hides what will run, or tools chosen from memory
+    When the plan step of harness-setup is read
+    Then it asks for the exact content of check configurations and the page each tool was read from
+    """
+    text = " ".join(read(HARNESS_SETUP / "SKILL.md").split())
+    assert "each settings file, hook and check configuration, pinned versions included" in text
+    assert "the documentation page each tool was read from" in text
+
+
+LESSONS_FROM_THE_TRIALS = [
+    ("SKILL.md", "where they are hosted"),
+    ("SKILL.md", "must be able to reach the neighbouring documents"),
+    ("SKILL.md", "write this command in its `AGENTS.md`"),
+    ("SKILL.md", "with their reason, in the language of the documents"),
+    ("SKILL.md", "The section names this skill"),
+    ("SKILL.md", "If that repository already has code"),
+    ("SKILL.md", "a permitted command that only quotes the same words"),
+    ("SKILL.md", "whose name holds an accent"),
+    ("SKILL.md", "refers to people by their role"),
+    ("catalog.md", "`--no-verify`, `-n`, `SKIP=`"),
+    ("catalog.md", "updates the privacy page, if the project has one"),
+    ("existing-project.md", "gives the exact command to format one file"),
+    ("existing-project.md", "refuses the commands of the framework until the user confirms"),
+]
+
+
+@pytest.mark.parametrize("name, phrase", LESSONS_FROM_THE_TRIALS, ids=lambda value: value[:40])
+def test_harness_setup_keeps_what_the_trials_taught(name, phrase):
+    """
+    Given a defect that a trial of harness-setup on a fictional project revealed
+    When the file that prevents it is read
+    Then its rule is still there
+    """
+    assert phrase in " ".join(read(HARNESS_SETUP / name).split())

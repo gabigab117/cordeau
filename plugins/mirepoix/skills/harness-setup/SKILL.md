@@ -18,7 +18,8 @@ Ask questions in the user's language. Then write files and answer in the languag
 interview (step 3).
 
 If your tool refuses to read a file of this skill or to run its script, ask the user to allow it.
-Do not rebuild its content from memory.
+Do not rebuild its content from memory. Read the other files of this skill only when a step sends you
+to them.
 
 ## Step 1: recognise the situation
 
@@ -51,7 +52,11 @@ Write nothing before step 5.
 - Explore the project by reading it: stack and versions, tooling in place (lint, format, types, tests,
   coverage, pre-commit, CI, deployment), existing instructions, README, documentation. Run none of its
   commands (tests, builds, installs) before the plan is approved: on an unknown project, they can have
-  side effects.
+  side effects. Never open a `.env` file or another file that may hold a secret: note that it exists, and
+  leave it closed.
+- Leave the user's personal instruction files alone (`~/.claude/CLAUDE.md` and the like): they are not
+  part of the project. Nothing from them enters the harness, and what is versioned refers to people by
+  their role, not their name.
 - Read the current documentation of each mechanism you plan to use in the coding tools of the
   project: instruction files, rules, skills, hooks, permissions. Write no syntax from memory.
 - Do the same for each tool of the stack that the harness will configure, in its official
@@ -71,8 +76,8 @@ tool's question feature if it has one. For each one, propose the answer the code
    conflict?
 3. **Organisation**: alone or in a team, branches and pull requests or direct work on `main`, who
    approves what.
-4. **Repositories**: how many, public or private, where the project's documents live (roadmap,
-   decisions, infrastructure).
+4. **Repositories**: how many, public or private, where they are hosted, where the project's documents
+   live (roadmap, decisions, infrastructure).
 5. **Quality**: target coverage, typing, end-to-end tests, accessibility, performance.
 6. **Contracts between parts**: API between back and front, shared data schema, SDK.
 7. **Personal or sensitive data**, legal constraints.
@@ -90,11 +95,12 @@ tool's question feature if it has one. For each one, propose the answer the code
 
 ## Step 4: plan
 
-Propose the plan of the harness before writing anything:
+Read [catalog.md](catalog.md), then propose the plan of the harness before writing anything:
 
 - each file to create or change, with its role and its sections;
-- the guardrails kept, with **the exact content of each settings file and hook**, since they will
-  run on the user's machine;
+- the guardrails kept, with **the exact content of each settings file, hook and check configuration,
+  pinned versions included**, never a summary, since they will run on the user's machine, and the
+  documentation page each tool was read from;
 - the pieces of the catalog set aside, each with its reason;
 - what is left to the user (secrets, repository settings, DNS…).
 
@@ -113,26 +119,31 @@ Write the files of the plan. Short rules with their reason, and room for the tra
   a file above it. The root refers to a repository rather than repeating it.
 - **If the root sits above the git roots**, the plan says where it is versioned, and each repository's
   file also carries the languages line and the workflow.
+- **A session started in a repository must be able to reach the neighbouring documents** it is told to
+  read or write. Check how each tool grants this (`additionalDirectories` in Claude Code).
 - **The simplification section goes in each repository's file**, since its test commands and shared
   pieces are proper to that repository.
 - **Essential checks** (lint, format, tests, secret detection) go in pre-commit and CI: they hold
-  for every tool and for a human.
+  for every tool and for a human. With pre-commit, run `pre-commit install` in each repository and
+  write this command in its `AGENTS.md`, since a new clone needs it: a check that does not run at commit
+  protects nothing.
 - **What only concerns Claude Code** goes in `.claude/rules/`, loaded with `AGENTS.md`, and in
-  `.claude/settings.json`: `deny` rules on `Read(.env)` and `Read(.env.*)`, and a `Stop` hook that
-  runs the project's checks.
+  `.claude/settings.json`: `deny` rules on `Read(.env)` and `Read(.env.*)`, then `Read(!.env.example)`
+  so that the template stays readable, in this order, and a `Stop` hook that runs the project's checks.
 - **Procedures become skills. What can be verified becomes a hook, a pre-commit check or a CI job.**
 - **The glossary stays out of the files loaded at every session**, in a document of its own.
 - **No instruction file describes the file tree.**
 
 ### What the `AGENTS.md` files carry
 
-All of it in the language chosen for the documents.
+All of it in the language chosen for the documents. Hook scripts, CI files and commit messages follow the
+language chosen for the code.
 
 - **Languages**: one line in the root file, for example
   `Languages: code in English, interface in French, documents in French, exchanges with the AI in French.`
 - **The marker**: at the top of each `AGENTS.md`, in an HTML comment, with the version of the base
   from the first entry of [CHANGELOG.md](CHANGELOG.md). The root file also lists the pieces set
-  aside, with their reason:
+  aside, with their reason, in the language of the documents:
 
   ```html
   <!-- mirepoix:harness version=0.1.0
@@ -144,7 +155,9 @@ All of it in the language chosen for the documents.
 - **The simplification pass** (piece 11 of the catalog): a section marked
   `<!-- mirepoix:simplification-pass -->`, under a heading of your choice, with the closing order,
   the shared pieces, the house rules, the test commands and where to note what is seen outside the
-  diff. The `simplification-pass` skill finds it through this marker.
+  diff. The `simplification-pass` skill finds it through this marker. The section names this skill, and
+  the plan says how each coding tool of the project gets it (the plugin for Claude Code,
+  `npx skills add` for the others).
 
 ### By situation
 
@@ -157,7 +170,8 @@ All of it in the language chosen for the documents.
   [CHANGELOG.md](CHANGELOG.md) newer than it, adapted to the project and written in the language of
   its documents. Skip an entry about a piece set aside, and say so. Show the diff, then raise the
   version in every marker.
-- **Change of shape**: write the `AGENTS.md` of the new repository, and update the one at the root.
+- **Change of shape**: write the `AGENTS.md` of the new repository, and update the one at the root. If
+  that repository already has code, follow [existing-project.md](existing-project.md) for it.
 
 ## Step 6: verify before handing back
 
@@ -179,14 +193,18 @@ Fix what fails in what you wrote before you report.
   `<!-- mirepoix:simplification-pass -->`, since a tool can remove HTML comments from its context.
 - **Instructions actually read**: with Claude Code, look for a `CLAUDE.md`, `.claude/CLAUDE.md` or
   `CLAUDE.local.md` in the project and in each folder above it, because any of them stops it from
-  reading `AGENTS.md`. The user's own `~/.claude/CLAUDE.md` does not count. Tell the user the line to
-  expect at the start of a session: `AGENTS.md loaded`.
-- **Guardrails**: run the pre-commit checks on every file of a new project, and on one throwaway
-  file of an existing one: with no staged file, they can check nothing and still look green. Validate
+  reading `AGENTS.md`. The user's own `~/.claude/CLAUDE.md` does not count. Tell the user how to confirm
+  it in a new session: `/context all` lists `AGENTS.md` under **Memory files**.
+- **Guardrails**: run the pre-commit checks on every file of a new project. Then, on any project, try
+  them on one throwaway file, staged, with a fake secret and a lint defect: they must refuse it, since with
+  no staged file they can check nothing and still look green. Remove it afterwards. Validate
   the CI file, with a linter such as `actionlint` if available. Try each blocking hook by piping it the
-  JSON of the forbidden command and reading its exit code, never by running the command. Try each
-  `Read` rule on a fictional file, a nested one included. If a rule only loads at the next session, say
-  that this check is left to the user. On an existing project, follow the limits of
+  JSON of the forbidden command and reading its exit code, never by running the command. Include its
+  other spellings (`git -C . push`, `-fu`, `+main`, `git checkout .`) and a permitted command that only
+  quotes the same words, such as a commit message. Try a `Stop` hook on a changed file whose name holds
+  an accent: git quotes such names by default. Try each `Read` rule on a fictional file, a nested one
+  included. If a rule only loads at the next session, say that this check is left to the user. On an
+  existing project, follow the limits of
   [existing-project.md](existing-project.md).
 - **A fresh reading**: read each `AGENTS.md` as a new session that knows nothing else. Does it know
   what to do, where to look and when to stop?

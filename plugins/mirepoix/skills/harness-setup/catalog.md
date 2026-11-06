@@ -94,8 +94,10 @@ already did the work.
   hook for a command.
 - A `deny` rule on Bash compares the text of the command: `git -C . push` passes through
   `Bash(git push *)`. A command that must really be blocked goes through a `PreToolUse` hook that reads
-  it and refuses (exit code 2, reason on stderr). The Mirepoix plugin already does so for force-push,
-  `reset --hard`, `checkout --` and `restore`: add only what is proper to the project.
+  it and refuses (exit code 2, reason on stderr). If the whole team works through Claude Code with the
+  Mirepoix plugin, its hook already does so for force-push, `reset --hard`, `checkout --` and `restore`:
+  add only what is proper to the project. Otherwise, the project's hook covers them too. Skipping the
+  checks (`--no-verify`, `-n`, `SKIP=`) is one of these commands.
 - Hooks also serve what must happen every time: formatting after a write, or an end-of-task check that
   sends the model back to work with a reason (`Stop`). Check in the documentation how to avoid an
   endless loop.
@@ -148,7 +150,8 @@ that have a memory.
 - Secrets and server access live in the CI secrets and in the server's `.env` files. Versioned templates
   only keep placeholders.
 - No client or third-party name in a public repository. Sensitive documents go in a private one.
-- Personal data: store only what a card asks for, and any card that adds some updates the privacy page.
+- Personal data: store only what a card asks for, and any card that adds some updates the privacy page, if
+  the project has one.
 
 ## 14. Local conventions
 
