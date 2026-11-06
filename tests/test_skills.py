@@ -456,6 +456,66 @@ def test_changelog_notes_the_hook_of_the_plugin():
     assert "guardrails.py" in read(HARNESS_SETUP / "CHANGELOG.md")
 
 
+README = ROOT / "README.md"
+
+
+def test_readme_stays_short():
+    """
+    Given a README that must get to the point
+    When its lines are counted
+    Then it stays under 120
+    """
+    assert len(read(README).splitlines()) < 120
+
+
+@pytest.mark.parametrize(
+    "heading",
+    ["How it works", "What you get", "What it writes in your project", "Install", "Use it", "Update", "What Mirepoix runs on your machine", "What has been tested"],
+)
+def test_readme_answers_the_questions_of_a_new_reader(heading):
+    """
+    Given a reader who wants to know how it works, how to install it and what it runs
+    When the README is read
+    Then each question has its section
+    """
+    assert f"## {heading}\n" in read(README)
+
+
+def test_readme_names_every_skill():
+    """
+    Given the skills of the plugin
+    When the README is read
+    Then it names each one
+    """
+    text = read(README)
+    for skill in SKILLS:
+        assert f"`{skill.parent.name}`" in text
+
+
+def test_readme_names_everything_that_runs_on_the_machine():
+    """
+    Given the brief asks the README to say what runs on the machine
+    When its section is read
+    Then it names each script of the plugin, the folder it writes, the agent and the telemetry of the third-party tool
+    """
+    text = read(README)
+    section = text[text.index("## What Mirepoix runs on your machine") : text.index("## What has been tested")]
+    for path in sorted(PLUGIN.rglob("*.py")):
+        if "__pycache__" not in path.parts:
+            assert f"`{path.name}`" in section, path.name
+    for expected in (".mirepoix/", "`reviewer` agent", "DISABLE_TELEMETRY=1", "`python3`", "`bubblewrap`"):
+        assert expected in section, expected
+
+
+def test_readme_says_what_the_hook_cannot_do():
+    """
+    Given a hook that reads the text of a command
+    When the README is read
+    Then it says the hook stops accidents, not an attacker
+    """
+    assert "it stops accidents, not an attacker" in read(README)
+
+
 LESSONS_FROM_THE_TRIALS = [
     ("SKILL.md", "where they are hosted"),
     ("SKILL.md", "must be able to reach the neighbouring documents"),
