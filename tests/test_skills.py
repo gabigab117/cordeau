@@ -299,6 +299,15 @@ def test_harness_setup_plan_shows_its_sources_and_pinned_versions():
     assert "the documentation page each tool was read from" in text
 
 
+def test_changelog_notes_the_hook_of_the_plugin():
+    """
+    Given the brief asks for each change of a hook to be noted in the changelog
+    When the changelog is read
+    Then it names the script the hook runs
+    """
+    assert "guardrails.py" in read(HARNESS_SETUP / "CHANGELOG.md")
+
+
 LESSONS_FROM_THE_TRIALS = [
     ("SKILL.md", "where they are hosted"),
     ("SKILL.md", "must be able to reach the neighbouring documents"),

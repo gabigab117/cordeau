@@ -7,3 +7,6 @@ the project, then raise the version in the marker.
 ## 0.1.0
 
 First version: nothing to apply.
+
+The plugin ships one hook: Claude Code runs `scripts/guardrails.py` before each shell command, and it refuses destructive git
+commands and skipped checks. A project that holds a copy of this script replaces it with the new one when an entry says so.
