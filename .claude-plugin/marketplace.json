@@ -1,0 +1,14 @@
+{
+  "name": "gabigab117",
+  "description": "Plugins by gabigab117.",
+  "owner": {
+    "name": "gabigab117"
+  },
+  "plugins": [
+    {
+      "name": "mirepoix",
+      "source": "./plugins/mirepoix",
+      "description": "The aromatic base for every AI-coded project."
+    }
+  ]
+}
