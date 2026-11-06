@@ -39,6 +39,14 @@ Other tools:
 npx skills update
 ```
 
+## Tests
+
+```bash
+uv run --no-project --python 3.14 --with pytest pytest tests
+```
+
+The suite also runs on Python 3.12 and 3.13.
+
 ## Later
 
 Candidates for a future version, not part of this one:
