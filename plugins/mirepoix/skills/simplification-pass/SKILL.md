@@ -78,7 +78,7 @@ The brief replaces the reviewer's search phase: that is where the saving comes f
 
 Once the diff file is written, take the first option your tool offers.
 
-1. **The `mirepoix:simplifier` agent** (Mirepoix plugin for Claude Code), in the background, with no
+1. **The `mirepoix:reviewer` agent** (Mirepoix plugin for Claude Code), in the background, with no
    `model` or `effort` override. Its only tools are Read, Grep and Glob, so it cannot change
    anything. While it runs, prepare what comes next (test data, acceptance checks). The prompt
    carries only the brief:
