@@ -6,12 +6,7 @@ silence to let the normal permissions decide. It reads the text of the command, 
 attacker: a script that calls git itself goes through. Standard library only, no network, nothing written.
 """
 
-import itertools
-import json
-import os
-import re
-import shlex
-import sys
+import itertools, json, os, re, shlex, sys
 
 REMOTE = "this rewrites or deletes history on the remote."
 WORK = "this throws away uncommitted work for good."
@@ -139,9 +134,14 @@ def line_reason(line, directory):
 
 def main():
     call = json.loads(sys.stdin.buffer.read())
-    reason = line_reason((call.get("tool_input") or {}).get("command") or call.get("command") or "", call.get("cwd") or ".")
+    tool_input = call.get("tool_input") or call.get("toolInput") or {}  # Grok Build writes toolInput
+    reason = line_reason(tool_input.get("command") or call.get("command") or "", call.get("cwd") or ".")
+    message = f"Refused by Cordeau: {reason} If wanted, the user runs it in their own terminal."
     if reason:
-        print(f"Refused by Cordeau: {reason} If wanted, the user runs it in their own terminal.", file=sys.stderr)
+        print(message, file=sys.stderr)
+    if call.get("hook_event_name") == "beforeShellExecution":  # Cursor blocks the command if its hook prints no answer
+        refusal = {"permission": "deny", "user_message": message, "agent_message": message}
+        print(json.dumps(refusal if reason else {"permission": "allow"}))
     return 2 if reason else 0
 
 

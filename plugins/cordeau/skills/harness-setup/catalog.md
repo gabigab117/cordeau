@@ -97,9 +97,10 @@ already did the work.
   it and refuses (exit code 2, reason on stderr). If the whole team works through Claude Code with the
   Cordeau plugin, its hook already refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped
   checks (`--no-verify`, `-n`, `SKIP=`): add only what is proper to the project. Otherwise, copy `scripts/guardrails.py`
-  of this skill into the project and call it from each tool's hook settings. Do not rewrite it: it has its tests, and
-  hooks rewritten by a model let neighbouring spellings through. Keep the copy out of the project's linter and formatter, so
-  that it stays identical.
+  of this skill into the project and call it from each tool's hook settings. It reads the calls of Claude Code, Codex,
+  Cursor and Grok Build and answers each of them in its own format, so call it directly, with no wrapper. Do not rewrite it:
+  it has its tests, and hooks rewritten by a model let neighbouring spellings through. Keep the copy out of the project's
+  linter and formatter, so that it stays identical.
 - Hooks also serve what must happen every time: formatting after a write, or an end-of-task check that
   sends the model back to work with a reason (`Stop`). Check in the documentation how to avoid an
   endless loop. A hook runs outside the sandbox, so it runs no project code.

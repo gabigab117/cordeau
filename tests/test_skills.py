@@ -334,6 +334,16 @@ def test_catalog_does_not_assume_the_plugin_is_installed():
     assert "If the whole team works through Claude Code with the Cordeau plugin" in text
 
 
+def test_catalog_keeps_the_guard_script_unwrapped():
+    """
+    Given a script that answers each tool in its own format
+    When the catalog tells a project to copy it
+    Then it asks to call the script directly, with no wrapper
+    """
+    text = " ".join(read(HARNESS_SETUP / "catalog.md").split())
+    assert "answers each of them in its own format, so call it directly, with no wrapper" in text
+
+
 def test_harness_setup_plan_shows_its_sources_and_pinned_versions():
     """
     Given a plan that hides what will run, or tools chosen from memory

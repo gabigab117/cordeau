@@ -331,6 +331,60 @@ def test_the_command_can_sit_at_the_top_level(project):
     assert run_hook(json.dumps({"command": "git push --force"}), project).returncode == 2
 
 
+def cursor_call(command, cwd):
+    return json.dumps({"hook_event_name": "beforeShellExecution", "command": command, "cwd": str(cwd), "sandbox": False})
+
+
+def test_cursor_gets_an_answer_for_a_command_that_passes(project):
+    """
+    Given Cursor, which blocks a command when its hook prints no answer
+    When the hook reads a harmless command
+    Then it answers with a permission that allows it, and exit code 0
+    """
+    result = run_hook(cursor_call("git status", project), project)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"permission": "allow"}
+    assert result.stderr == ""
+
+
+@pytest.mark.parametrize("command", ["git push --force", "git reset --hard", "git commit --no-verify -m x"])
+def test_cursor_gets_the_refusal_and_its_reason(command, project):
+    """
+    Given Cursor, which reads the reason of a refusal from the JSON answer
+    When the hook reads a forbidden command
+    Then it denies it in JSON for the user and for the agent, with exit code 2
+    """
+    result = run_hook(cursor_call(command, project), project)
+    assert result.returncode == 2, result.stderr
+    answer = json.loads(result.stdout)
+    assert answer["permission"] == "deny"
+    assert REFUSAL in answer["user_message"]
+    assert REFUSAL in answer["agent_message"]
+
+
+@pytest.mark.parametrize(
+    ("command", "exit_code"),
+    [("git push --force", 2), ("git reset --hard", 2), ("git status", 0)],
+)
+def test_grok_build_sends_its_command_in_camel_case(command, exit_code, project):
+    """
+    Given Grok Build, which names the input of a tool `toolInput`
+    When the hook reads its call
+    Then the same rules apply, with nothing on stdout
+    """
+    call = {
+        "hookEventName": "pre_tool_use",
+        "cwd": str(project),
+        "workspaceRoot": str(project),
+        "toolName": "run_terminal_command",
+        "toolInput": {"command": command},
+    }
+    result = run_hook(json.dumps(call), project)
+    assert result.returncode == exit_code, result.stderr
+    assert result.stdout == ""
+    assert (REFUSAL in result.stderr) == (exit_code == 2)
+
+
 def test_unreadable_input_never_looks_like_a_refusal(project):
     """
     Given input that is not JSON
