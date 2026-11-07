@@ -13,9 +13,7 @@ You need Python 3 (`python3`). The plugin needs Claude Code 2.1.277 or later, an
 1. You ask, in your project: "set up the harness". It never starts on its own.
 2. It reads the project and the documentation of its tools, then asks about a dozen questions. Nothing is written yet.
 3. You approve a plan that shows each file, the exact content of each setting, hook and check, and what is left out, with the reason.
-4. It writes the files. Then it tries the checks on a fake secret and a lint defect, tries the sandbox on a fictional secret file, and measures its files.
-
-On an existing project, it changes no existing code.
+4. It writes the files. Then it tries the checks on a fake secret and a lint defect, tries the sandbox on a fictional secret file, and measures its files. On an existing project, it changes no existing code.
 
 Then, at the end of each card (a task of the roadmap), two passes review the uncommitted diff: one to simplify it, one to find security flaws.
 
@@ -26,7 +24,7 @@ Then, at the end of each card (a task of the roadmap), two passes review the unc
 | `harness-setup` skill | Sets up or updates the harness, whatever the stack | Agent Skills tools |
 | `simplification-pass` skill | Reads the diff of a card for reuse, needless complexity, wasted work and fixes at the wrong level | Agent Skills tools |
 | `security-pass` skill | Reads the diff of a card for access, input, secrets, dependencies, configuration and weakened guardrails | Agent Skills tools |
-| Git hook | Refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped checks when the agent tries them | Claude Code plugin |
+| Git hook | Refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped checks when the agent tries them | Claude Code and Grok Build through the plugin, Codex through the copy `harness-setup` writes |
 | `reviewer` agent | Fresh, read-only reader used by both passes | Claude Code plugin |
 
 ## What it writes in your project
@@ -54,7 +52,7 @@ npx skills add gabigab117/cordeau
 
 ## Use it
 
-Say it to your agent, in any language:
+Say it to your agent, in any language. On Codex, name the skill to start the setup: `$harness-setup`.
 
 | Say | What happens |
 |---|---|
@@ -87,7 +85,7 @@ npx skills update
 | The two passes | At the end of a card | The diff | `.cordeau/*.diff`, ignored by git | `security-pass` checks new dependencies on their registry |
 | The checks written in your project | At commit, in CI, at the end of a task | Your code | Their caches | What you approved in the plan |
 
-The scripts use the Python standard library only. Each change to a hook is noted in the [changelog](plugins/cordeau/skills/harness-setup/CHANGELOG.md). Cordeau has no telemetry. `npx skills` is a third-party tool with its own anonymous telemetry: `DISABLE_TELEMETRY=1` turns it off.
+The scripts use the Python standard library only. Each change to a hook is noted in the [changelog](plugins/cordeau/skills/harness-setup/CHANGELOG.md). Cordeau has no telemetry. `npx skills` is a third-party tool with its own anonymous telemetry, which `DISABLE_TELEMETRY=1` turns off, and it writes a `skills-lock.json` in your project.
 
 Limits:
 
@@ -95,13 +93,14 @@ Limits:
 - Without `python3` on the `PATH`, Claude Code shows a hook error at each command, and the command runs.
 - The sandbox runs on macOS, Linux and WSL2. Linux and WSL2 need `bubblewrap` and `socat`. Without them, and on native Windows, commands run unsandboxed.
 - The sandbox blocks some everyday commands, such as `git remote add`, or `go get` and `pnpm install` on macOS. They go through once you approve them.
+- With Codex, the sandbox and the hook of a project apply once you trust the project and approve the hook with `/hooks`. Under `codex exec`, a hook that is not approved is skipped in silence.
 - To turn the plugin off: `claude plugin disable cordeau@gabigab117`.
 
 ## What has been tested
 
-Tested with Claude Code on macOS, on fictional projects: an empty folder, an old Django application without tests, and a small Go API. The sandbox, the hook and the checks were tried for real, by making them refuse.
+Tested with Claude Code on macOS, on fictional projects: an empty folder, an old Django application without tests, and a small Go API. The sandbox, the hook and the checks were tried for real, by making them refuse. The generated CI ran on GitHub for the Django and Go projects, and refused planted defects.
 
-Not tried yet: Codex, Cursor and Grok Build, Linux and Windows, Node as the main stack, a CI running on GitHub.
+Also on macOS: Codex 0.150.1 wrote a harness and ran both passes, and its sandbox and hook refused what they must. Grok Build 1.0.77 loaded the plugin, its hook refused the forbidden commands, and the security pass found the planted flaws; `harness-setup` was not tried there. Not tried yet: Cursor (its hook answer follows its documentation), Linux and Windows, Node as the main stack.
 
 ## Tests
 
