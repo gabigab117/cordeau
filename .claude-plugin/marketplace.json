@@ -6,9 +6,9 @@
   },
   "plugins": [
     {
-      "name": "mirepoix",
-      "source": "./plugins/mirepoix",
-      "description": "The aromatic base for every AI-coded project."
+      "name": "cordeau",
+      "source": "./plugins/cordeau",
+      "description": "The straight line for every AI-coded project."
     }
   ]
 }

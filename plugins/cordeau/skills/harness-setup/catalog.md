@@ -95,7 +95,7 @@ already did the work.
 - A `deny` rule on Bash compares the text of the command: `git -C . push` passes through
   `Bash(git push *)`. A command that must really be blocked goes through a `PreToolUse` hook that reads
   it and refuses (exit code 2, reason on stderr). If the whole team works through Claude Code with the
-  Mirepoix plugin, its hook already refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped
+  Cordeau plugin, its hook already refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped
   checks (`--no-verify`, `-n`, `SKIP=`): add only what is proper to the project. Otherwise, copy `scripts/guardrails.py`
   of this skill into the project and call it from each tool's hook settings. Do not rewrite it: it has its tests, and
   hooks rewritten by a model let neighbouring spellings through. Keep the copy out of the project's linter and formatter, so
@@ -129,7 +129,7 @@ already did the work.
 **Problem**: copies and indirections settle in card after card, and cost more to remove later.
 
 - The **method** lives in the `simplification-pass` skill. The **parameters** of the project live in a
-  section of its `AGENTS.md`, marked `<!-- mirepoix:simplification-pass -->`: the closing order, the
+  section of its `AGENTS.md`, marked `<!-- cordeau:simplification-pass -->`: the closing order, the
   shared pieces to compare, the house rules, the test commands to run again, where to note what is seen
   outside the diff.
 - Write this section; the skill reads it.
@@ -176,7 +176,7 @@ What a machine can verify is verified by a machine. The `AGENTS.md` keeps what n
   audit, and the framework's production configuration check if it has one. In the Definition of Done: the permissions of
   each endpoint are tested.
 - **The review.** At each card that touches authentication, data, user input or dependencies: the `security-pass` skill,
-  with its parameters in a section of the `AGENTS.md` marked `<!-- mirepoix:security-pass -->`, which says where these
+  with its parameters in a section of the `AGENTS.md` marked `<!-- cordeau:security-pass -->`, which says where these
   subjects live. With Claude Code, add `/security-review` at the end of a batch or before a release. It compares with
   `origin/HEAD`: on a branch it sees the whole branch, and on `main` with a push at each card, run it before the push, since
   afterwards it has nothing to read. On a repository made with `git init`, run `git remote set-head origin <branch>` once.

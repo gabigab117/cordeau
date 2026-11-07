@@ -141,7 +141,7 @@ def main():
     call = json.loads(sys.stdin.buffer.read())
     reason = line_reason((call.get("tool_input") or {}).get("command") or call.get("command") or "", call.get("cwd") or ".")
     if reason:
-        print(f"Refused by Mirepoix: {reason} If wanted, the user runs it in their own terminal.", file=sys.stderr)
+        print(f"Refused by Cordeau: {reason} If wanted, the user runs it in their own terminal.", file=sys.stderr)
     return 2 if reason else 0
 
 

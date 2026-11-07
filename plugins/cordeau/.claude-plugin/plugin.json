@@ -1,0 +1,10 @@
+{
+  "name": "cordeau",
+  "version": "0.1.0",
+  "description": "The straight line for every AI-coded project.",
+  "author": {
+    "name": "gabigab117"
+  },
+  "repository": "https://github.com/gabigab117/cordeau",
+  "license": "MIT"
+}

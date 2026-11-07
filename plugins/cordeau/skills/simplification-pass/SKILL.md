@@ -27,7 +27,7 @@ noted on one line in its root `AGENTS.md`.
 
 ## Step 1: read the project's section
 
-Look for the marker `<!-- mirepoix:simplification-pass -->` in the project's `AGENTS.md` files (at
+Look for the marker `<!-- cordeau:simplification-pass -->` in the project's `AGENTS.md` files (at
 the root and in each repository). **Search the files themselves**, because a tool can remove HTML
 comments from the copy it keeps in context. The heading next to the marker can be anything, in any
 language. The section runs from the marker to the next heading of the same or a higher level.
@@ -45,7 +45,7 @@ No section: stick to the four angles, find the shared folders in one search (`ut
 section, offering to write one in the language of its documents:
 
 ```markdown
-<!-- mirepoix:simplification-pass -->
+<!-- cordeau:simplification-pass -->
 ## Simplification pass
 
 - Closing order: …
@@ -59,9 +59,9 @@ section, offering to write one in the language of its documents:
 
 The brief replaces the reviewer's search phase: that is where the saving comes from.
 
-1. **The diff**, in `.mirepoix/simplification.diff` at the root of the repository, one file per
+1. **The diff**, in `.cordeau/simplification.diff` at the root of the repository, one file per
    repository. A reviewer can read a file inside the project without asking for permission, which
-   is not the case for a file elsewhere. On the first pass, also write `.mirepoix/.gitignore` with
+   is not the case for a file elsewhere. On the first pass, also write `.cordeau/.gitignore` with
    the single line `*`: git then ignores the folder, with no change to the repository. Write
    `git diff HEAD` plus the untracked files if the card is not committed, otherwise the range of its
    commits. Leave out secret files (`.env`, keys, credentials): an untracked file is not always an
@@ -78,7 +78,7 @@ The brief replaces the reviewer's search phase: that is where the saving comes f
 
 Once the diff file is written, take the first option your tool offers.
 
-1. **The `mirepoix:reviewer` agent** (Mirepoix plugin for Claude Code), in the background, with no
+1. **The `cordeau:reviewer` agent** (Cordeau plugin for Claude Code), in the background, with no
    `model` or `effort` override. Its only tools are Read, Grep and Glob, so it cannot change
    anything. While it runs, prepare what comes next (test data, acceptance checks). The prompt
    carries only the brief:

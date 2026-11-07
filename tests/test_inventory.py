@@ -12,7 +12,7 @@ import pytest
 
 SCRIPT = (
     Path(__file__).resolve().parents[1]
-    / "plugins/mirepoix/skills/harness-setup/scripts/inventory.py"
+    / "plugins/cordeau/skills/harness-setup/scripts/inventory.py"
 )
 FAKE_SECRET = "fake-secret-5521"
 

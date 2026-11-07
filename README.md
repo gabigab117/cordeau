@@ -1,10 +1,10 @@
-# Mirepoix
+# Cordeau
 
-> The aromatic base for every AI-coded project.
+> The straight line for every AI-coded project.
 
 **Beta, version 0.1.0.** Expect changes between versions.
 
-A harness is what keeps successive AI coding sessions consistent: instructions, a roadmap, automatic checks and settings. Mirepoix sets one up for your project. It interviews you, shows you what it will write, writes it, then proves that the checks refuse a bad commit.
+A cordeau is the line a mason stretches so that every row stays straight. A harness does that for AI coding sessions: instructions, a roadmap, automatic checks and settings keep them consistent. Cordeau sets one up for your project. It interviews you, shows you what it will write, writes it, then proves that the checks refuse a bad commit.
 
 You need Python 3 (`python3`), and Claude Code 2.1.277 or later for the plugin. The plan names any other tool, such as `pre-commit`.
 
@@ -45,11 +45,11 @@ Tools are chosen for your stack from their official documentation: Ruff and `pip
 
 ```bash
 # Claude Code
-claude plugin marketplace add gabigab117/mirepoix
-claude plugin install mirepoix@gabigab117
+claude plugin marketplace add gabigab117/cordeau
+claude plugin install cordeau@gabigab117
 
 # Other tools
-npx skills add gabigab117/mirepoix
+npx skills add gabigab117/cordeau
 ```
 
 ## Use it
@@ -70,13 +70,13 @@ Claude Code leaves auto-update off for third-party marketplaces. Turn it on unde
 ```bash
 # Claude Code
 claude plugin marketplace update gabigab117
-claude plugin update mirepoix@gabigab117
+claude plugin update cordeau@gabigab117
 
 # Other tools
 npx skills update
 ```
 
-## What Mirepoix runs on your machine
+## What Cordeau runs on your machine
 
 | What | When | Reads | Writes | Network |
 |---|---|---|---|---|
@@ -84,10 +84,10 @@ npx skills update
 | `inventory.py` | When `harness-setup` starts | The manifests of the project, never a `.env` | Nothing | None |
 | `reviewer` agent | During a pass | Project files, with Read, Grep and Glob only | Nothing | None |
 | `harness-setup`, once you approve the plan | Once, then at each update | The project, never a `.env` | The planned files, `git init`, `pre-commit install --install-hooks` | Downloads the pinned checks |
-| The two passes | At the end of a card | The diff | `.mirepoix/*.diff`, ignored by git | `security-pass` checks new dependencies on their registry |
+| The two passes | At the end of a card | The diff | `.cordeau/*.diff`, ignored by git | `security-pass` checks new dependencies on their registry |
 | The checks written in your project | At commit, in CI, at the end of a task | Your code | Their caches | What you approved in the plan |
 
-The scripts use the Python standard library only. Each change to a hook is noted in the [changelog](plugins/mirepoix/skills/harness-setup/CHANGELOG.md). Mirepoix has no telemetry. `npx skills` is a third-party tool with its own anonymous telemetry: `DISABLE_TELEMETRY=1` turns it off.
+The scripts use the Python standard library only. Each change to a hook is noted in the [changelog](plugins/cordeau/skills/harness-setup/CHANGELOG.md). Cordeau has no telemetry. `npx skills` is a third-party tool with its own anonymous telemetry: `DISABLE_TELEMETRY=1` turns it off.
 
 Limits:
 
@@ -95,7 +95,7 @@ Limits:
 - Without `python3` on the `PATH`, Claude Code shows a hook error at each command, and the command runs.
 - The sandbox runs on macOS, Linux and WSL2. Linux and WSL2 need `bubblewrap` and `socat`. Without them, and on native Windows, commands run unsandboxed.
 - The sandbox blocks some everyday commands, such as `git remote add`, or `go get` and `pnpm install` on macOS. They go through once you approve them.
-- To turn the plugin off: `claude plugin disable mirepoix@gabigab117`.
+- To turn the plugin off: `claude plugin disable cordeau@gabigab117`.
 
 ## What has been tested
 

@@ -30,7 +30,7 @@ is a finding.
 
 ## Step 1: read the project's section
 
-Look for the marker `<!-- mirepoix:security-pass -->` in the project's `AGENTS.md` files (at the root and in each
+Look for the marker `<!-- cordeau:security-pass -->` in the project's `AGENTS.md` files (at the root and in each
 repository). **Search the files themselves**, because a tool can remove HTML comments from the copy it keeps in context.
 The heading next to the marker can be anything, in any language. The section runs from the marker to the next heading of
 the same or a higher level.
@@ -45,7 +45,7 @@ No section: use the grid alone, find these places with one search, and tell the 
 to write one in the language of its documents:
 
 ```markdown
-<!-- mirepoix:security-pass -->
+<!-- cordeau:security-pass -->
 ## Security
 
 - Authentication: …
@@ -60,8 +60,8 @@ to write one in the language of its documents:
 
 The brief replaces the reviewer's search phase.
 
-1. **The diff**, in `.mirepoix/security.diff` at the root of the repository, one file per repository. A reviewer can read a
-   file inside the project without asking for permission. On the first pass, also write `.mirepoix/.gitignore` with the
+1. **The diff**, in `.cordeau/security.diff` at the root of the repository, one file per repository. A reviewer can read a
+   file inside the project without asking for permission. On the first pass, also write `.cordeau/.gitignore` with the
    single line `*`. Write `git diff HEAD` plus the untracked files if the card is not committed, otherwise the range of
    its commits. **Never open a secret file (`.env`, keys, credentials)**, and leave it out of the diff. An untracked one
    that git does not ignore (`git check-ignore`) is a finding: name it, without reading it. If the file cannot be
@@ -76,7 +76,7 @@ The brief replaces the reviewer's search phase.
 
 Once the diff file is written, take the first option your tool offers.
 
-1. **The `mirepoix:reviewer` agent** (Mirepoix plugin for Claude Code), with no `model` or `effort` override. Its only tools
+1. **The `cordeau:reviewer` agent** (Cordeau plugin for Claude Code), with no `model` or `effort` override. Its only tools
    are Read, Grep and Glob, so a trapped text in the diff cannot make it run anything. The prompt carries only the brief:
 
    ```text

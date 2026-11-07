@@ -1,4 +1,4 @@
-"""Contract of the git guardrails hook of the Mirepoix plugin."""
+"""Contract of the git guardrails hook of the Cordeau plugin."""
 
 import ast
 import json
@@ -9,10 +9,10 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins/mirepoix"
+PLUGIN = ROOT / "plugins/cordeau"
 SCRIPT = PLUGIN / "skills/harness-setup/scripts/guardrails.py"
 HOOKS = PLUGIN / "hooks/hooks.json"
-REFUSAL = "Refused by Mirepoix:"
+REFUSAL = "Refused by Cordeau:"
 STANDARD_MODULES = {"itertools", "json", "os", "re", "shlex", "sys"}
 
 REWRITES_THE_REMOTE = [

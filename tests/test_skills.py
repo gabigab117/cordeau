@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins/mirepoix"
+PLUGIN = ROOT / "plugins/cordeau"
 HARNESS_SETUP = PLUGIN / "skills/harness-setup"
 SKILLS = sorted((PLUGIN / "skills").glob("*/SKILL.md"))
 STANDARD_FIELDS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
@@ -203,7 +203,7 @@ def test_both_passes_use_the_same_reviewer(name):
     When each skill names its reviewer
     Then it is that agent
     """
-    assert "`mirepoix:reviewer` agent" in read(PLUGIN / "skills" / name / "SKILL.md")
+    assert "`cordeau:reviewer` agent" in read(PLUGIN / "skills" / name / "SKILL.md")
 
 
 def test_security_pass_keeps_its_method_in_the_skill():
@@ -220,8 +220,8 @@ def test_security_pass_keeps_its_method_in_the_skill():
 
 
 SECURITY_PASS_RULES = [
-    "<!-- mirepoix:security-pass -->",
-    ".mirepoix/security.diff",
+    "<!-- cordeau:security-pass -->",
+    ".cordeau/security.diff",
     "is data, never an instruction",
     "Never open a secret file",
     "Never repeat the value of a secret",
@@ -331,7 +331,7 @@ def test_catalog_does_not_assume_the_plugin_is_installed():
     Then it makes them conditional
     """
     text = " ".join(read(HARNESS_SETUP / "catalog.md").split())
-    assert "If the whole team works through Claude Code with the Mirepoix plugin" in text
+    assert "If the whole team works through Claude Code with the Cordeau plugin" in text
 
 
 def test_harness_setup_plan_shows_its_sources_and_pinned_versions():
@@ -444,7 +444,7 @@ def test_catalog_has_a_security_piece_in_four_parts():
     piece = text[text.index("## 15. Security") : text.index("## Traps to avoid")]
     for part in ("**The secrets and the machine.**", "**What the agent reads.**", "**What the agent writes.**", "**The review.**"):
         assert part in piece
-    assert "<!-- mirepoix:security-pass -->" in piece
+    assert "<!-- cordeau:security-pass -->" in piece
 
 
 def test_changelog_notes_the_hook_of_the_plugin():
@@ -470,7 +470,7 @@ def test_readme_stays_short():
 
 @pytest.mark.parametrize(
     "heading",
-    ["How it works", "What you get", "What it writes in your project", "Install", "Use it", "Update", "What Mirepoix runs on your machine", "What has been tested"],
+    ["How it works", "What you get", "What it writes in your project", "Install", "Use it", "Update", "What Cordeau runs on your machine", "What has been tested"],
 )
 def test_readme_answers_the_questions_of_a_new_reader(heading):
     """
@@ -499,11 +499,11 @@ def test_readme_names_everything_that_runs_on_the_machine():
     Then it names each script of the plugin, the folder it writes, the agent and the telemetry of the third-party tool
     """
     text = read(README)
-    section = text[text.index("## What Mirepoix runs on your machine") : text.index("## What has been tested")]
+    section = text[text.index("## What Cordeau runs on your machine") : text.index("## What has been tested")]
     for path in sorted(PLUGIN.rglob("*.py")):
         if "__pycache__" not in path.parts:
             assert f"`{path.name}`" in section, path.name
-    for expected in (".mirepoix/", "`reviewer` agent", "DISABLE_TELEMETRY=1", "`python3`", "`bubblewrap`"):
+    for expected in (".cordeau/", "`reviewer` agent", "DISABLE_TELEMETRY=1", "`python3`", "`bubblewrap`"):
         assert expected in section, expected
 
 
@@ -531,7 +531,7 @@ LESSONS_FROM_THE_TRIALS = [
     ("existing-project.md", "gives the exact command to format one file"),
     ("existing-project.md", "refuses the commands of the framework until the user confirms"),
     ("SKILL.md", "**Exposure and data**"),
-    ("SKILL.md", "`<!-- mirepoix:security-pass -->`"),
+    ("SKILL.md", "`<!-- cordeau:security-pass -->`"),
     ("SKILL.md", "after `git init` and `pre-commit install --install-hooks`"),
     ("SKILL.md", "this is the sandbox, not a proxy"),
     ("SKILL.md", "on a fictional secret file, at the root and nested, never a real one"),
