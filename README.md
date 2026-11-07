@@ -46,6 +46,9 @@ Tools are chosen for your stack from their official documentation: Ruff and `pip
 claude plugin marketplace add gabigab117/cordeau
 claude plugin install cordeau@gabigab117
 
+# Grok Build
+grok plugin install 'gabigab117/cordeau#plugins/cordeau' --trust
+
 # Other tools
 npx skills add gabigab117/cordeau
 ```
@@ -104,9 +107,7 @@ Also on macOS: Codex 0.150.1 wrote a harness and ran both passes, and its sandbo
 
 ## Tests
 
-```bash
-uv run --no-project --python 3.14 --with pytest pytest tests  # also on 3.12 and 3.13
-```
+`uv run --no-project --python 3.14 --with pytest pytest tests`, also on Python 3.12 and 3.13.
 
 ## Later, not in this version
 
