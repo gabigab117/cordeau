@@ -5,6 +5,16 @@
   "author": {
     "name": "gabigab117"
   },
+  "homepage": "https://github.com/gabigab117/cordeau",
   "repository": "https://github.com/gabigab117/cordeau",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "harness",
+    "agents-md",
+    "agent-skills",
+    "code-review",
+    "security",
+    "guardrails",
+    "pre-commit"
+  ]
 }

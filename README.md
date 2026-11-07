@@ -6,7 +6,7 @@
 
 A cordeau is the line a mason stretches so that every row stays straight. A harness does that for AI coding sessions: instructions, a roadmap, automatic checks and settings keep them consistent. Cordeau sets one up for your project. It interviews you, shows you what it will write, writes it, then proves that the checks refuse a bad commit.
 
-You need Python 3 (`python3`), and Claude Code 2.1.277 or later for the plugin. The plan names any other tool, such as `pre-commit`.
+You need Python 3 (`python3`). The plugin needs Claude Code 2.1.277 or later, and `npx skills` needs Node 22.20 or later. The plan names any other tool, such as `pre-commit`.
 
 ## How it works
 

@@ -140,6 +140,19 @@ def test_published_files_hold_no_personal_path(path):
         assert forbidden not in text, forbidden
 
 
+def test_plugin_manifest_gives_a_homepage_and_keywords():
+    """
+    Given the panel of `/plugin` reads these fields, and a homepage that is not a URL stops the plugin from loading
+    When the manifest of the plugin is read
+    Then the homepage is the public repository and the keywords are simple tags
+    """
+    manifest = json.loads(read(PLUGIN / ".claude-plugin" / "plugin.json"))
+    assert manifest["homepage"] == "https://github.com/gabigab117/cordeau"
+    assert manifest["repository"] == manifest["homepage"]
+    assert manifest["keywords"]
+    assert all(re.fullmatch(r"[a-z0-9-]+", keyword) for keyword in manifest["keywords"])
+
+
 def test_changelog_starts_with_the_plugin_version():
     """
     Given the manifest of the plugin and the changelog read by harness-setup
