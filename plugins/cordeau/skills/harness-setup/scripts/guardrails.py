@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Refuse destructive git commands and skipped checks before an agent runs them.
 
-PreToolUse hook: reads the tool call as JSON on stdin, exits 2 with the reason on stderr to refuse, and exits 0 in
-silence to let the normal permissions decide. It reads the text of the command, so it stops accidents, not an
-attacker: a script that calls git itself goes through. Standard library only, no network, nothing written.
+PreToolUse hook: reads the tool call as JSON on stdin, exits 2 with the reason on stderr to refuse, exits 0 otherwise to
+let the normal permissions decide, and answers Cursor in JSON as well. It reads the text of the command, so it stops
+accidents, not an attacker: a script that calls git itself goes through. Standard library only, no network, nothing written.
 """
 
 import itertools, json, os, re, shlex, sys
@@ -129,19 +129,19 @@ def line_reason(line, directory):
         reason = command_reason(words, directory)
         if reason:
             return reason
-    return None
 
 
 def main():
     call = json.loads(sys.stdin.buffer.read())
     tool_input = call.get("tool_input") or call.get("toolInput") or {}  # Grok Build writes toolInput
     reason = line_reason(tool_input.get("command") or call.get("command") or "", call.get("cwd") or ".")
-    message = f"Refused by Cordeau: {reason} If wanted, the user runs it in their own terminal."
+    answer = {"permission": "allow"}
     if reason:
+        message = f"Refused by Cordeau: {reason} If wanted, the user runs it in their own terminal."
         print(message, file=sys.stderr)
+        answer = {"permission": "deny", "user_message": message, "agent_message": message}
     if call.get("hook_event_name") == "beforeShellExecution":  # Cursor blocks the command if its hook prints no answer
-        refusal = {"permission": "deny", "user_message": message, "agent_message": message}
-        print(json.dumps(refusal if reason else {"permission": "allow"}))
+        print(json.dumps(answer))
     return 2 if reason else 0
 
 

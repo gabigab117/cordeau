@@ -213,8 +213,9 @@ Every coding tool of the project gets the same two walls: a sandbox and the git 
 Neither is set aside because a tool seems to have no file for it: read its documentation, then try it. Say in the report what
 could not be tried.
 
-- **The git guard**: copy `scripts/guardrails.py` into the project, for example in `tools/guardrails/`, and call it from the
-  hook settings of each tool that does not get the Cordeau plugin (piece 8 of the catalog).
+- **The git guard**: copy `scripts/guardrails.py` into the project and call it from the hook settings of each tool that does
+  not get the Cordeau plugin (piece 8 of the catalog). Put it where the tool's sandbox keeps it read-only, so that an agent
+  cannot rewrite it: with Codex, in `.codex/hooks/`, as measured.
 - **Codex**, measured on version 0.150.1. It reads `.codex/config.toml` and `.codex/hooks.json` once the project is trusted, and
   runs a hook only once someone approves it with `/hooks`, again after each change. Under `codex exec`, a hook that is not
   approved is skipped in silence. Write both in the report and in `AGENTS.md`, since a new clone needs them. Start from this
@@ -249,7 +250,7 @@ could not be tried.
   ```
 
   ```json
-  {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "python3 \"$(git rev-parse --show-toplevel)/tools/guardrails/guardrails.py\"", "timeout": 10}]}]}}
+  {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/guardrails.py\"", "timeout": 10}]}]}}
   ```
 
   - A `deny` with a glob cannot be reopened: the template `.env.example` stays closed, so the variables it lists also go in

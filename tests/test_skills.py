@@ -409,7 +409,7 @@ def test_harness_setup_gives_codex_the_hook_of_the_git_guard():
     handler = hook["hooks"]["PreToolUse"][0]["hooks"][0]
     assert hook["hooks"]["PreToolUse"][0]["matcher"] == "Bash"
     assert handler["command"].startswith("python3 ")
-    assert "guardrails.py" in handler["command"]
+    assert "/.codex/hooks/guardrails.py" in handler["command"], "its sandbox keeps this folder read-only"
 
 
 def test_harness_setup_keeps_every_approval_with_the_sandbox():
