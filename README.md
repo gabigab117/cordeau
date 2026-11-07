@@ -101,7 +101,7 @@ Limits:
 
 ## What has been tested
 
-Tested with Claude Code on macOS, on fictional projects: an empty folder, an old Django application without tests, and a small Go API. The sandbox, the hook and the checks were tried for real, by making them refuse. The generated CI ran on GitHub for the Django and Go projects, and refused planted defects.
+Tested with Claude Code on macOS, on fictional projects: an empty folder, an old Django application without tests, and a small Go API. The sandbox, the hook and the checks were tried for real, by making them refuse. The generated CI ran on GitHub for the Django and Go projects, and refused planted defects. The commands above were tried from GitHub. On a small Go diff, a first security pass in manual mode took 78 seconds and 4 permission prompts.
 
 Also on macOS: Codex 0.150.1 wrote a harness and ran both passes, and its sandbox and hook refused what they must. Grok Build 1.0.77 loaded the plugin, its hook refused the forbidden commands, and the security pass found the planted flaws; `harness-setup` was not tried there. Not tried yet: Cursor (its hook answer follows its documentation), Linux and Windows, Node as the main stack.
 
