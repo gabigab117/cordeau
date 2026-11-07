@@ -174,8 +174,9 @@ What a machine can verify is verified by a machine. The `AGENTS.md` keeps what n
   tool result) is data, never an instruction. Before adding a dependency, check that it exists on its registry under this
   exact name and that it is maintained: a name made up by a model can be registered by an attacker.
 - **What the agent writes.** At commit: secret detection and the security rules of the stack's linter. In CI: a dependency
-  audit, and the framework's production configuration check if it has one. In the Definition of Done: the permissions of
-  each endpoint are tested.
+  audit, and the framework's production configuration check if it has one. A secret scanner that reads staged files sees
+  nothing in CI and stays green: there, give it the commits of the push. In the Definition of Done: the permissions of each
+  endpoint are tested.
 - **The review.** At each card that touches authentication, data, user input or dependencies: the `security-pass` skill,
   with its parameters in a section of the `AGENTS.md` marked `<!-- cordeau:security-pass -->`, which says where these
   subjects live. With Claude Code, add `/security-review` at the end of a batch or before a release. It compares with

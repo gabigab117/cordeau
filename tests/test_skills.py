@@ -2,6 +2,8 @@
 
 import json
 import re
+import textwrap
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -374,6 +376,42 @@ def sandbox_block():
     return next(json.loads(block) for block in blocks if '"sandbox"' in block)
 
 
+def codex_profile():
+    text = read(HARNESS_SETUP / "SKILL.md")
+    return tomllib.loads(textwrap.dedent(re.search(r"```toml\n(.*?)```", text, re.DOTALL)[1]))
+
+
+def test_harness_setup_gives_codex_a_sandbox_profile_it_can_start_from():
+    """
+    Given a model that wrote "Codex has no project file for this" and left the sandbox out
+    When the Codex profile of the skill is parsed
+    Then it selects itself, closes the secret files, and allows a short list of domains
+    """
+    profile = codex_profile()
+    name = profile["default_permissions"]
+    rules = profile["permissions"][name]
+    assert rules["extends"] == ":workspace"
+    assert rules["filesystem"][":workspace_roots"]["**/.env"] == "deny"
+    assert rules["filesystem"][":workspace_roots"]["**/.env.*"] == "deny"
+    assert rules["filesystem"]["~/.ssh"] == "deny"
+    assert rules["network"]["domains"] == {"github.com": "allow"}
+    assert profile["features"]["network_proxy"] is True
+
+
+def test_harness_setup_gives_codex_the_hook_of_the_git_guard():
+    """
+    Given a model that left the git guard out of its plan for Codex
+    When the skill speaks about the other coding tools
+    Then it gives the exact hook, calling the copy of the script
+    """
+    text = read(HARNESS_SETUP / "SKILL.md")
+    hook = next(json.loads(block) for block in re.findall(r"```json\n(.*?)```", text, re.DOTALL) if "PreToolUse" in block)
+    handler = hook["hooks"]["PreToolUse"][0]["hooks"][0]
+    assert hook["hooks"]["PreToolUse"][0]["matcher"] == "Bash"
+    assert handler["command"].startswith("python3 ")
+    assert "guardrails.py" in handler["command"]
+
+
 def test_harness_setup_keeps_every_approval_with_the_sandbox():
     """
     Given the sandbox runs its commands without asking by default, even in manual mode
@@ -549,6 +587,13 @@ LESSONS_FROM_THE_TRIALS = [
     ("SKILL.md", "a permitted command that only quotes the same words"),
     ("SKILL.md", "whose name holds an accent"),
     ("SKILL.md", "refers to people by their role"),
+    ("SKILL.md", "Neither is set aside because a tool seems to have no file for it"),
+    ("SKILL.md", "it fails inside a Codex session"),
+    ("SKILL.md", "a hook that is not approved is skipped in silence"),
+    ("SKILL.md", "A `deny` with a glob cannot be reopened"),
+    ("SKILL.md", "`git add`, `git commit` and `pre-commit install` need an approval"),
+    ("catalog.md", "sees nothing in CI and stays green"),
+    ("existing-project.md", "has no base to compare with"),
     ("catalog.md", "`--no-verify`, `-n`, `SKIP=`"),
     ("catalog.md", "updates the privacy page, if the project has one"),
     ("existing-project.md", "gives the exact command to format one file"),

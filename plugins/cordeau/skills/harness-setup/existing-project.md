@@ -98,8 +98,10 @@ stay factual and neutral.
 - Pre-commit only runs on changed files, its default behaviour. Never `--all-files` without the user's agreement,
   including at the verification step of the skill.
 - Hooks and CI follow the same limit, so that existing code does not keep them red: no format-after-write hook, and a
-  `Stop` hook or a CI job that checks changed files only. Test tooling and the ratchet belong to the first task, not to
-  this session. At the verification step, a failure from existing code is reported, never fixed.
+  `Stop` hook or a CI job that checks changed files only. On the first push of a branch to a new remote, such a job has no base
+  to compare with and can check everything: handle this case, or say in the report that this first run can be red. Test tooling
+  and the ratchet belong to the first task, not to this session. At the verification step, a failure from existing code is
+  reported, never fixed.
 - What is seen outside the work area becomes a proposal, noted in the "To take up" section of the current roadmap, never
   an addition to the commit.
 

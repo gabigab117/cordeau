@@ -148,7 +148,7 @@ Write the files of the plan. Short rules with their reason, and room for the tra
 
 A `deny` rule stops the reading tools and the file commands your tool recognises, not a script that opens the file
 itself or a `grep -r`. That is the job of a sandbox, enforced by the operating system on shell commands (piece 15 of the
-catalog). This section is for Claude Code. For another tool, read how it does this: Codex has its own sandbox settings.
+catalog). This section is for Claude Code, and the next one for the others.
 
 Start from this block in `.claude/settings.json`, and check it against the current documentation:
 
@@ -206,6 +206,58 @@ Some commands stay blocked. Write the ones this project needs in its `AGENTS.md`
 
 The way through is the retry outside the sandbox, which asks a person, or the user's own terminal. Use `excludedCommands`
 only with the user's agreement: the command then leaves the sandbox for good. Hooks run outside the sandbox.
+
+### The other coding tools
+
+Every coding tool of the project gets the same two walls: a sandbox and the git guard, in the plan with their exact content.
+Neither is set aside because a tool seems to have no file for it: read its documentation, then try it. Say in the report what
+could not be tried.
+
+- **The git guard**: copy `scripts/guardrails.py` into the project, for example in `tools/guardrails/`, and call it from the
+  hook settings of each tool that does not get the Cordeau plugin (piece 8 of the catalog).
+- **Codex**, measured on version 0.150.1. It reads `.codex/config.toml` and `.codex/hooks.json` once the project is trusted, and
+  runs a hook only once someone approves it with `/hooks`, again after each change. Under `codex exec`, a hook that is not
+  approved is skipped in silence. Write both in the report and in `AGENTS.md`, since a new clone needs them. Start from this
+  profile and this hook, and check them against the current documentation:
+
+  ```toml
+  default_permissions = "project"
+
+  [features]
+  network_proxy = true
+
+  [permissions.project]
+  extends = ":workspace"
+
+  [permissions.project.filesystem]
+  glob_scan_max_depth = 6
+  "~/.ssh" = "deny"
+  "~/.aws" = "deny"
+  "~/.config/gh" = "deny"
+  "~/.netrc" = "deny"
+  "~/.git-credentials" = "deny"
+
+  [permissions.project.filesystem.":workspace_roots"]
+  "**/.env" = "deny"
+  "**/.env.*" = "deny"
+
+  [permissions.project.network]
+  enabled = true
+
+  [permissions.project.network.domains]
+  "github.com" = "allow"
+  ```
+
+  ```json
+  {"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "python3 \"$(git rev-parse --show-toplevel)/tools/guardrails/guardrails.py\"", "timeout": 10}]}]}}
+  ```
+
+  - A `deny` with a glob cannot be reopened: the template `.env.example` stays closed, so the variables it lists also go in
+    the README or `AGENTS.md`.
+  - A neighbouring repository: `[permissions.project.workspace_roots]` with `"../roadmaps" = true`. Its secret files stay closed.
+  - `.git` and `.codex` stay read-only: `git add`, `git commit` and `pre-commit install` need an approval. Write it in `AGENTS.md`.
+  - Try the profile on a fictional file with `codex sandbox -P project -C . -- cat .env`, from the user's terminal: it fails inside a
+    Codex session (`sandbox_apply`), so give them the commands if you are in one.
 
 ### What the `AGENTS.md` files carry
 
