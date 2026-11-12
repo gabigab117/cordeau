@@ -2,7 +2,7 @@
 
 > The straight line for every AI-coded project.
 
-**Beta, version 0.1.0.** Expect changes between versions.
+**Beta, version 0.1.1.** Expect changes between versions.
 
 A cordeau is the line a mason stretches so that every row stays straight. A harness does that for AI coding sessions: instructions, a roadmap, automatic checks and settings keep them consistent. Cordeau sets one up for your project. It interviews you, shows you what it will write, writes it, then proves that the checks refuse a bad commit.
 
@@ -66,7 +66,7 @@ Say it to your agent, in any language. On Codex, name the skill to start the set
 
 ## Update
 
-Claude Code leaves auto-update off for third-party marketplaces. Turn it on under **Marketplaces** in `/plugin`, or update by hand:
+Claude Code installs the plugin for your user, so one update covers all your projects. `npx skills` installs in the project, unless you add `-g`. The harness, though, belongs to each project: after the update, say "Update the harness" in each one. Claude Code leaves auto-update off for third-party marketplaces. Turn it on under **Marketplaces** in `/plugin`, or update by hand:
 
 ```bash
 # Claude Code
