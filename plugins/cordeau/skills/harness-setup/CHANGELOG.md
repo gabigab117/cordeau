@@ -4,6 +4,13 @@ Read by the `harness-setup` skill. Each entry is written as instructions for a p
 an earlier version: apply the entries newer than the version in its `cordeau:harness` marker, adapted to
 the project, then raise the version in the marker.
 
+## 0.1.1
+
+The git guard lets the agent delete a remote branch once it is merged (`git push origin --delete topic`, `-d`, `:topic`). It
+still refuses to delete `main`, `master`, `develop`, `trunk`, `HEAD`, or a name known only once the command runs, such as
+`$(git branch --show-current)`. If the project holds a copy of `scripts/guardrails.py`, for Codex in `.codex/hooks/`,
+replace it with the new one. If its `AGENTS.md` sends branch deletion to the user's terminal, remove that line.
+
 ## 0.1.0
 
 First version: nothing to apply.

@@ -24,7 +24,7 @@ Then, at the end of each card (a task of the roadmap), two passes review the unc
 | `harness-setup` skill | Sets up or updates the harness, whatever the stack | Agent Skills tools |
 | `simplification-pass` skill | Reads the diff of a card for reuse, needless complexity, wasted work and fixes at the wrong level | Agent Skills tools |
 | `security-pass` skill | Reads the diff of a card for access, input, secrets, dependencies, configuration and weakened guardrails | Agent Skills tools |
-| Git hook | Refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped checks when the agent tries them | Claude Code and Grok Build through the plugin, Codex through the copy `harness-setup` writes |
+| Git hook | Refuses force-push, deleting `main` on the remote, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped checks when the agent tries them | Claude Code and Grok Build through the plugin, Codex through the copy `harness-setup` writes |
 | `reviewer` agent | Fresh, read-only reader used by both passes | Claude Code plugin |
 
 ## What it writes in your project

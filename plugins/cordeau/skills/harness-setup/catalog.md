@@ -95,8 +95,9 @@ already did the work.
 - A `deny` rule on Bash compares the text of the command: `git -C . push` passes through
   `Bash(git push *)`. A command that must really be blocked goes through a `PreToolUse` hook that reads
   it and refuses (exit code 2, reason on stderr). If the whole team works through Claude Code with the
-  Cordeau plugin, its hook already refuses force-push, `reset --hard`, `checkout --`, `restore`, `clean -f` and skipped
-  checks (`--no-verify`, `-n`, `SKIP=`): add only what is proper to the project. Otherwise, copy `scripts/guardrails.py`
+  Cordeau plugin, its hook already refuses force-push, deleting `main` on the remote, `reset --hard`, `checkout --`,
+  `restore`, `clean -f` and skipped checks (`--no-verify`, `-n`, `SKIP=`), and lets a merged branch be deleted: add only
+  what is proper to the project. Otherwise, copy `scripts/guardrails.py`
   of this skill into the project and call it from each tool's hook settings. It reads the calls of Claude Code, Codex,
   Cursor and Grok Build and answers each of them in its own format, so call it directly, with no wrapper. Do not rewrite it:
   it has its tests, and hooks rewritten by a model let neighbouring spellings through. Keep the copy out of the project's

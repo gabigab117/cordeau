@@ -12,6 +12,7 @@ REMOTE = "this rewrites or deletes history on the remote."
 WORK = "this throws away uncommitted work for good."
 CHECKS = "this skips the checks of the project."
 SEPARATORS = ";&|()\n"
+PROTECTED = re.compile(r"\+.*|(refs/heads/)?(main|master|develop|trunk|head|@)|.*\$.*", re.IGNORECASE)
 ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=")
 BYPASS = re.compile(r"(SKIP|HUSKY|HUSKY_SKIP_HOOKS|LEFTHOOK)=")
 # Quotes and escapes come first, so that a # or an apostrophe inside them is not read as a comment or a quote.
@@ -39,9 +40,7 @@ def checkout_loses_work(args, directory):
     """Tell if a checkout overwrites files: forced, with `--`, or naming a path rather than a branch."""
     if given(args, "--force", "--pathspec-from-file", letters="f", takes_value="bB") or "--" in args[:-1]:
         return True
-    if set(args) & {"-b", "-B", "--orphan"}:
-        return False
-    paths = [word for word in args if not word.startswith("-")]
+    paths = [] if set(args) & {"-b", "-B", "--orphan"} else [word for word in args if not word.startswith("-")]
     return any(re.search(r"^[.:~]|/$|[*?[]|\{\}", p) or os.path.exists(os.path.join(directory, p)) for p in paths)
 
 
@@ -54,10 +53,11 @@ def subcommand_reason(name, args, directory):
         return CHECKS if "core.hookspath" in values and (len(values) > 1 or "--unset" in args) else None
     if name == "submodule" and "foreach" in args:
         return line_reason("env " + " ".join(args[args.index("foreach") + 1 :]), directory)
-    if name == "push":
-        refspec = any(word.startswith("+") or (word.startswith(":") and len(word) > 1) for word in args)
-        options = ("--force", "--force-with-lease", "--force-if-includes", "--mirror", "--delete", "--prune")
-        return REMOTE if refspec or given(args, *options, letters="fd", takes_value="o") else None
+    if name == "push":  # a merged branch may be deleted, but not main, a name known only once it runs, nor a forced ref
+        deleting = given(args, "--delete", letters="d", takes_value="o")
+        refs = [word.lstrip(":") for word in args if word[:1] in ("+", ":") or (deleting and word[:1] != "-")]
+        forced = ("--force", "--force-with-lease", "--force-if-includes", "--mirror", "--prune")
+        return REMOTE if any(map(PROTECTED.fullmatch, refs)) or given(args, *forced, letters="f", takes_value="o") else None
     loses_work = {
         "checkout": checkout_loses_work(args, directory),
         "clean": given(args, "--force", letters="f", takes_value="e") and not given(args, "--dry-run", letters="n"),

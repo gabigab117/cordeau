@@ -332,7 +332,7 @@ Fix what fails in what you wrote before you report.
   that looks made up, and add a defect that the security rules catch. Remove the file afterwards. Validate
   the CI file, with a linter such as `actionlint` if available. Try each blocking hook by piping it the
   JSON of the forbidden command and reading its exit code, never by running the command. Include its
-  other spellings (`git -C . push`, `-fu`, `+main`, `git checkout .`, a wrapper in front such as `uv run` or `env`, `source`) and a
+  other spellings (`git -C . push`, `-fu`, `+main`, `-d origin main`, `git checkout .`, a wrapper in front such as `uv run` or `env`, `source`) and a
   permitted command that only quotes the same words, such as a commit message. Try a `Stop` hook on a changed file whose name holds
   an accent, since git quotes such names by default, and from a subfolder, where it must still check the whole repository. Try each `Read` rule on a fictional file, a nested one
   included. If a rule only loads at the next session, say that this check is left to the user. On an
